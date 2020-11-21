@@ -6,19 +6,20 @@ ASC = 'ascendente'
 DESC = 'descendente'
 STRING = 'string'
 NUMERICO = 'numerico'
-nomes_colunas = ['mes', 'dia', 'temperatura_media', 'temperatura_maxima', 'temperatura_minima', 'precipitacao_media']
-tipos_filtros = dict([
+NOMES_COLUNAS = ['mes', 'dia', 'temperatura_media', 'temperatura_maxima', 'temperatura_minima', 'precipitacao_media']
+TIPOS_FILTROS = dict([
     (NUMERICO, ['maior', 'menor', 'igual', 'diferente']),
     (STRING, ['igual', 'diferente', 'contem'])
 ])
-filtros_colunas = dict([
-    (nomes_colunas[0], tipos_filtros.get(STRING)),
-    (nomes_colunas[1], tipos_filtros.get(NUMERICO)),
-    (nomes_colunas[2], tipos_filtros.get(NUMERICO)),
-    (nomes_colunas[3], tipos_filtros.get(NUMERICO)),
-    (nomes_colunas[4], tipos_filtros.get(NUMERICO)),
-    (nomes_colunas[5], tipos_filtros.get(NUMERICO))
+FILTROS_COLUNAS = dict([
+    (NOMES_COLUNAS[0], TIPOS_FILTROS.get(STRING)),
+    (NOMES_COLUNAS[1], TIPOS_FILTROS.get(NUMERICO)),
+    (NOMES_COLUNAS[2], TIPOS_FILTROS.get(NUMERICO)),
+    (NOMES_COLUNAS[3], TIPOS_FILTROS.get(NUMERICO)),
+    (NOMES_COLUNAS[4], TIPOS_FILTROS.get(NUMERICO)),
+    (NOMES_COLUNAS[5], TIPOS_FILTROS.get(NUMERICO))
 ])
+
 
 def cabecalho_programa():
     """
@@ -78,12 +79,12 @@ def ordernar_dados(nome_coluna, tipo_ordenacao, dados = None):
     :param tipo_ordenacao: ascendente ou descendente
     :return: dados ordenados
     """
-    dados_ordernar = dados_pesquisa if dados is None else dados
-    if nome_coluna not in nomes_colunas:
+    dados = dados_pesquisa if dados is None else dados
+    if nome_coluna not in NOMES_COLUNAS:
         raise Exception('Nome de coluna invalido.')
     if tipo_ordenacao not in [ASC, DESC]:
         raise Exception('Tipo de ordenacao invalido.')
-    return dados_ordernar.sort_values(by=[nome_coluna], ascending=(tipo_ordenacao == ASC))
+    return dados.sort_values(by=[nome_coluna], ascending=(tipo_ordenacao == ASC))
 
 
 def verifica_ordernar_dados():
@@ -101,7 +102,7 @@ def verifica_ordernar_dados():
         ordernar = (resposta is not None) and (resposta.strip().lower() == 's')
         if ordernar:
             iteracoes += 1
-            nome_coluna = ler_entrada_usuario(f'Favor escolher alguma das colunas: {nomes_colunas}')
+            nome_coluna = ler_entrada_usuario(f'Favor escolher alguma das colunas: {NOMES_COLUNAS}')
             tipo_ordenacao = ler_entrada_usuario(f'Favor escolher o tipo de ordenacao: {ASC, DESC}')
             try:
                 dados = ordernar_dados(nome_coluna, tipo_ordenacao)
@@ -119,30 +120,30 @@ def filtrar_dados(nome_coluna, tipo_filtro, valor, dados = None):
     :param valor: valor do filtro
     :return: dados filtrados
     """
-    dados_filtrar = dados_pesquisa if dados is None else dados
-    if nome_coluna not in nomes_colunas:
+    dados = dados_pesquisa if dados is None else dados
+    if nome_coluna not in NOMES_COLUNAS:
         raise Exception('Nome de coluna invalido.')
-    filtro_coluna = filtros_colunas.get(nome_coluna)
+    filtro_coluna = FILTROS_COLUNAS.get(nome_coluna)
     if tipo_filtro not in filtro_coluna:
         raise Exception('Nome de filtro invalido.')
-    if filtro_coluna == tipos_filtros.get(STRING):
+    if filtro_coluna == TIPOS_FILTROS.get(STRING):
         if tipo_filtro == 'igual':
-            return dados_filtrar[dados_filtrar[nome_coluna] == valor]
+            return dados[dados[nome_coluna] == valor]
         elif tipo_filtro == 'diferente':
-            return dados_filtrar[dados_filtrar[nome_coluna] != valor]
+            return dados[dados[nome_coluna] != valor]
         else:
-            return dados_filtrar[str(valor).lower() in dados_filtrar[nome_coluna].lower()]
+            return dados[str(valor).lower() in dados[nome_coluna].lower()]
     else:
         if DECIMAL_REGEX.match(str(valor)) is None:
             raise Exception('Valor do filtro nao possui valor numerico.')
         if tipo_filtro == 'maior':
-            return dados_filtrar[dados_filtrar[nome_coluna] > float(valor)]
+            return dados[dados[nome_coluna] > float(valor)]
         elif tipo_filtro == 'menor':
-            return dados_filtrar[dados_filtrar[nome_coluna] < float(valor)]
+            return dados[dados[nome_coluna] < float(valor)]
         elif tipo_filtro == 'igual':
-            return dados_filtrar[dados_filtrar[nome_coluna] == float(valor)]
+            return dados[dados[nome_coluna] == float(valor)]
         else:
-            return dados_filtrar[dados_filtrar[nome_coluna] != float(valor)]
+            return dados[dados[nome_coluna] != float(valor)]
 
 
 cabecalho_programa()
