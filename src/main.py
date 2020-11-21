@@ -182,9 +182,18 @@ def verifica_filtrar_dados(dados = None):
                 print(erro)
     return dados
 
+
+def exportar_dados(dados: None):
+    """
+    Funcao que exporta os dados do usuario para um arquivo csv
+    """
+    dados = dados_pesquisa if dados is None else dados
+
+
 cabecalho_programa()
 dados_pesquisa = ler_arquivo_pesquisa_climatica()
 verifica_exibir_todos_dados()
 dados_ordenados = verifica_ordernar_dados()
 dados_filtrados = verifica_filtrar_dados(dados_ordenados)
+exportar_dados(dados_filtrados)
 obrigado()
