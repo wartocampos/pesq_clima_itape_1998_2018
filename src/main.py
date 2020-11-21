@@ -1,6 +1,6 @@
 import pandas as pd
 import matplotlib.pyplot as plt
-from utilitarios import ler_entrada_usuario, DECIMAL_REGEX
+from utilitarios import ler_entrada_usuario, ler_numero_decimal, DECIMAL_REGEX
 
 ASC = 'ascendente'
 DESC = 'descendente'
@@ -43,6 +43,10 @@ def cabecalho_programa():
     print('###########################################################################')
     print('')
 
+def obrigado():
+    print('###########################################################################')
+    print('#              Muito obrigado por utilizar nossa aplicacao                #')
+    print('###########################################################################')
 
 def ler_arquivo_pesquisa_climatica():
     """
@@ -93,7 +97,7 @@ def verifica_ordernar_dados():
     :return: dados ordenados
     """
     texto_inicial = 'Voce deseja ordernar os dados? (s/n)'
-    texto_recorrente = 'Voce deseja ordernar os dados novamente? (s/n)'
+    texto_recorrente = 'Voce deseja mudar a ordenacao dos dados? (s/n)'
     iteracoes = 0
     ordernar = True
     dados = None
@@ -102,10 +106,10 @@ def verifica_ordernar_dados():
         ordernar = (resposta is not None) and (resposta.strip().lower() == 's')
         if ordernar:
             iteracoes += 1
-            nome_coluna = ler_entrada_usuario(f'Favor escolher alguma das colunas: {NOMES_COLUNAS}')
+            nome_coluna = ler_entrada_usuario(f'Favor escolher uma das colunas: {NOMES_COLUNAS}')
             tipo_ordenacao = ler_entrada_usuario(f'Favor escolher o tipo de ordenacao: {ASC, DESC}')
             try:
-                dados = ordernar_dados(nome_coluna, tipo_ordenacao)
+                dados = ordernar_dados(nome_coluna, tipo_ordenacao, dados)
                 verifica_exibir_todos_dados(dados)
             except Exception as erro:
                 print(erro)
@@ -146,8 +150,41 @@ def filtrar_dados(nome_coluna, tipo_filtro, valor, dados = None):
             return dados[dados[nome_coluna] != float(valor)]
 
 
+def verifica_filtrar_dados(dados = None):
+    """
+    Funcao que verifica se usuario deseja filtrar dados
+    :return: dados ordenados
+    """
+    dados = dados_pesquisa if dados is None else dados
+    texto_inicial = 'Voce deseja filtrar os dados? (s/n)'
+    texto_recorrente = 'Voce deseja adionar outro filtro aos dados? (s/n)'
+    iteracoes = 0
+    filtrar = True
+    dados = None
+    while filtrar:
+        resposta = ler_entrada_usuario(texto_inicial if iteracoes == 0 else texto_recorrente)
+        filtrar = (resposta is not None) and (resposta.strip().lower() == 's')
+        if filtrar:
+            iteracoes += 1
+            valor_filtro = None
+            nome_coluna = ler_entrada_usuario(f'Favor escolher uma das colunas: {NOMES_COLUNAS}')
+            filtro_coluna = FILTROS_COLUNAS.get(nome_coluna)
+            tipo_filtro = ler_entrada_usuario(f'Favor escolher um tipo de filtro para {nome_coluna}: {filtro_coluna}')
+            texto_valor_filtro = f'Por favor informe o valor do filtro para a coluna {nome_coluna}:'
+            if filtro_coluna == TIPOS_FILTROS.get(STRING):
+                valor_filtro = ler_entrada_usuario(texto_valor_filtro)
+            else:
+                valor_filtro = ler_numero_decimal(texto_valor_filtro)
+            try:
+                dados = filtrar_dados(nome_coluna, tipo_filtro, valor_filtro, dados)
+                verifica_exibir_todos_dados(dados)
+            except Exception as erro:
+                print(erro)
+    return dados
+
 cabecalho_programa()
 dados_pesquisa = ler_arquivo_pesquisa_climatica()
 verifica_exibir_todos_dados()
 dados_ordenados = verifica_ordernar_dados()
-print(filtrar_dados('precipitacao_media', 'maior', 13))
+dados_filtrados = verifica_filtrar_dados(dados_ordenados)
+obrigado()
