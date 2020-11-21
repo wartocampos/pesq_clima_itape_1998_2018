@@ -1,5 +1,6 @@
 import pandas as pd
 import matplotlib.pyplot as plt
+import datetime
 from utilitarios import ler_entrada_usuario, ler_numero_decimal, DECIMAL_REGEX
 
 ASC = 'ascendente'
@@ -43,10 +44,12 @@ def cabecalho_programa():
     print('###########################################################################')
     print('')
 
+
 def obrigado():
     print('###########################################################################')
     print('#              Muito obrigado por utilizar nossa aplicacao                #')
     print('###########################################################################')
+
 
 def ler_arquivo_pesquisa_climatica():
     """
@@ -183,11 +186,25 @@ def verifica_filtrar_dados(dados = None):
     return dados
 
 
-def exportar_dados(dados: None):
+def exportar_dados(dados = None):
     """
     Funcao que exporta os dados do usuario para um arquivo csv
     """
     dados = dados_pesquisa if dados is None else dados
+    horario_agora = datetime.datetime.now()
+    nome_arquivo = f'./export_{horario_agora.strftime("%d_%m_%Y_%H_%M_%S")}.csv'
+    dados = dados_pesquisa if dados is None else dados
+    dados.to_csv(nome_arquivo, index=False, sep=';')
+
+
+def verifica_exportar_dados(dados = None):
+    """
+    Funcao que verifica se usuario deseja exportar dados
+    """
+    dados = dados_pesquisa if dados is None else dados
+    resposta = ler_entrada_usuario("Voce deseja exportar esses dados? (s/n)")
+    if (resposta is not None) and (resposta.strip().lower() == 's'):
+        exportar_dados(dados)
 
 
 cabecalho_programa()
@@ -195,5 +212,5 @@ dados_pesquisa = ler_arquivo_pesquisa_climatica()
 verifica_exibir_todos_dados()
 dados_ordenados = verifica_ordernar_dados()
 dados_filtrados = verifica_filtrar_dados(dados_ordenados)
-exportar_dados(dados_filtrados)
+verifica_exportar_dados(dados_filtrados)
 obrigado()

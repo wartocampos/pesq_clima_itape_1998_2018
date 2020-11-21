@@ -19,7 +19,7 @@ def ler_numero_decimal(titulo):
     :param titulo: Mensagem a ser exibida para informar a leitura da entrada fornecida pelo usuario.
     :return: Numero decimal digitado pelo usuario.
     """
-    return float(ler_entrada_usuario(titulo, DECIMAL_REGEX, 'O texto digitado nao esta valido como numero inteiro. Favor digite novamente'))
+    return float(ler_entrada_usuario(titulo, DECIMAL_REGEX, 'O texto digitado nao esta valido como numero decimal. Favor digite novamente'))
 
 
 def ler_entrada_usuario(titulo, regex = None, mensagem_erro = None):
