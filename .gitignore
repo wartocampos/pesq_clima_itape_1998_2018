@@ -130,3 +130,4 @@ dmypy.json
 
 # Application generated csv files
 /src/*.csv
+/src/*.png

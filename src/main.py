@@ -1,6 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import datetime
+import re
 from utilitarios import ler_entrada_usuario, ler_numero_decimal, ler_confirmacao_usuario, DECIMAL_REGEX
 
 ASC = 'ascendente'
@@ -208,7 +209,9 @@ def exportar_dados(dados=None):
     horario_agora = datetime.datetime.now()
     nome_arquivo = f'./export_{horario_agora.strftime("%d_%m_%Y_%H_%M_%S")}.csv'
     dados = dados_pesquisa if dados is None else dados
+    print('Exportando dados.')
     dados.to_csv(nome_arquivo, index=False, sep=';')
+    print(f'Dados exportados no arquivo: {nome_arquivo}')
 
 
 def verifica_exportar_dados(dados=None):
@@ -299,6 +302,9 @@ def retornar_dados_grafico_distribuicao_chuva():
 
 
 def gerar_graficos():
+    """
+    Funcao que gera 4 tipos de graficos: Precipitacao Media: Junho 1998-2018, Temperatura Minima: Junho 1998-2018, Volume Pluviometrico e Distribuicao de chuvas.
+    """
     dados_precipitacao_media = retornar_dados_grafico_precipitacao_media()
     dados_temperatura_minima = retornar_dados_grafico_temperatura_minima()
     dados_pluviometrico_medio = retornar_dados_grafico_volume_pluviometrico_medio()
@@ -314,15 +320,31 @@ def gerar_graficos():
     axs[1, 0].plot(dados_pluviometrico_medio.get(INDICE_EIXO_Y))
     axs[1, 0].set_title('Volume Pluviometrico Medio: 1998 - 2018')
     # grafico de media de distribuicao de chuvas
-    axs[1, 1].pie(dados_distribuicao_chuva.get(INDICE_EIXO_Y), labels=dados_distribuicao_chuva.get(INDICE_EIXO_X), colors=LISTA_DE_CORES)
+    axs[1, 1].pie(dados_distribuicao_chuva.get(INDICE_EIXO_Y), labels=dados_distribuicao_chuva.get(INDICE_EIXO_X),
+        colors=LISTA_DE_CORES, explode=(0, 0.1, 0, 0),  autopct='%1.1f%%')
     axs[1, 1].set_title('Media de Distribuicao de Chuvas: 1998 - 2018')
 
-    #for ax in axs.flat:
-    #    ax.set(xlabel='x-label', ylabel='y-label')
-    # Hide x labels and tick labels for top plots and y ticks for right plots.
-    #for ax in axs.flat:
-    #    ax.label_outer()
-    plt.show()
+
+def verifica_gerar_graficos():
+    print('Gerando graficos.')
+    gerar_graficos()
+    print('Graficos gerados.')
+    resposta = int(ler_entrada_usuario(
+        'Escolha a opcao para visualizacao do grafico: 1 - Em uma nova janela, 2 - Salvar em um arquivo',
+        re.compile("^[1|2]$"),
+        'Opcao invalida.'
+    ))
+    if resposta == 1:
+        plt.show()
+    else:
+        horario_agora = datetime.datetime.now()
+        nome_arquivo = f'./graficos_{horario_agora.strftime("%d_%m_%Y_%H_%M_%S")}.png'
+        print('Salvando graficos em um arquivo.')
+        # plt.savefig(nome_arquivo)
+        fig = plt.gcf()
+        fig.set_size_inches(18.5, 10.5)
+        fig.savefig(nome_arquivo, dpi=100)
+        print(f'Grafico salvo no arquivo: {nome_arquivo}')
 
 
 cabecalho_programa()
@@ -331,5 +353,5 @@ verifica_exibir_todos_dados()
 dados_ordenados = verifica_ordernar_dados()
 dados_filtrados = verifica_filtrar_dados(dados_ordenados)
 verifica_exportar_dados(dados_filtrados)
-gerar_graficos()
+verifica_gerar_graficos()
 obrigado()
