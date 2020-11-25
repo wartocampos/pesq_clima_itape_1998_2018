@@ -276,11 +276,13 @@ def retornar_dados_grafico_volume_pluviometrico_medio():
     """
     dados = retornar_dados_volume_pluviometrico_medio()
     dados_eixo_y = []
+    dados_eixo_x = []
     for indice in range(len(MESES_ANO)):
         mes_ano = MESES_ANO[indice]
         dados_eixo_y.append(dados.get(mes_ano))
+        dados_eixo_x.append(indice + 1)
     return dict([
-        (INDICE_EIXO_X, MESES_ANO),
+        (INDICE_EIXO_X, dados_eixo_x),
         (INDICE_EIXO_Y, dados_eixo_y)
     ])
 
@@ -325,8 +327,9 @@ def gerar_graficos():
     axs[0, 1].bar(dados_temperatura_minima.get(INDICE_EIXO_X), dados_temperatura_minima.get(INDICE_EIXO_Y), color=LISTA_DE_CORES)
     axs[0, 1].set_title('Media de Temperatura Minima em Junho: 1998 - 2018')
     # grafico de volume medio pluviometrico anual
-    axs[1, 0].plot(dados_pluviometrico_medio.get(INDICE_EIXO_Y))
+    axs[1, 0].plot(dados_pluviometrico_medio.get(INDICE_EIXO_X), dados_pluviometrico_medio.get(INDICE_EIXO_Y), marker='o')
     axs[1, 0].set_title('Volume Pluviometrico Medio: 1998 - 2018')
+    axs[1, 0].grid(True)
     # grafico de media de distribuicao de chuvas
     axs[1, 1].pie(dados_distribuicao_chuva.get(INDICE_EIXO_Y), labels=dados_distribuicao_chuva.get(INDICE_EIXO_X),
         colors=LISTA_DE_CORES, explode=(0, 0.1, 0, 0),  autopct='%1.1f%%')
