@@ -326,6 +326,9 @@ def gerar_graficos():
 
 
 def verifica_gerar_graficos():
+    """
+    Funcao que verifica como o usuario deseja visualizar os graficos.
+    """
     print('Gerando graficos.')
     gerar_graficos()
     print('Graficos gerados.')
@@ -340,7 +343,6 @@ def verifica_gerar_graficos():
         horario_agora = datetime.datetime.now()
         nome_arquivo = f'./graficos_{horario_agora.strftime("%d_%m_%Y_%H_%M_%S")}.png'
         print('Salvando graficos em um arquivo.')
-        # plt.savefig(nome_arquivo)
         fig = plt.gcf()
         fig.set_size_inches(18.5, 10.5)
         fig.savefig(nome_arquivo, dpi=100)
