@@ -2,6 +2,7 @@ import re
 
 INTEIRO_REGEX = re.compile("^[0-9]+$")
 DECIMAL_REGEX = re.compile("^[0-9]+(.[0-9]+)?$")
+CONFIRMACAO_REGEX = re.compile("^[s|S|n|N]$")
 
 
 def ler_numero_inteiro(titulo):
@@ -22,7 +23,16 @@ def ler_numero_decimal(titulo):
     return float(ler_entrada_usuario(titulo, DECIMAL_REGEX, 'O texto digitado nao esta valido como numero decimal. Favor digite novamente'))
 
 
-def ler_entrada_usuario(titulo, regex = None, mensagem_erro = None):
+def ler_confirmacao_usuario(titulo):
+    """
+    Funcao que faz a leitura da entrada esperando valor igual a: s, S, n ou N.
+    :param titulo: Mensagem a ser exibida para informar a leitura da entrada fornecida pelo usuario.
+    :return: Valor de confirmacao digitado pelo usuario.
+    """
+    return ler_entrada_usuario(titulo, CONFIRMACAO_REGEX, 'O valor informado nao esta valido. Favor digite novamente')
+
+
+def ler_entrada_usuario(titulo, regex=None, mensagem_erro=None):
     """
     Funcao que faz a leitura da entrada do usuario.
     :param titulo: Mensagem a ser exibida para informar a leitura da entrada fornecida pelo usuario.

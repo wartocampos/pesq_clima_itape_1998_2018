@@ -1,7 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import datetime
-from utilitarios import ler_entrada_usuario, ler_numero_decimal, DECIMAL_REGEX
+from utilitarios import ler_entrada_usuario, ler_numero_decimal, ler_confirmacao_usuario, DECIMAL_REGEX
 
 ASC = 'ascendente'
 DESC = 'descendente'
@@ -20,6 +20,20 @@ FILTROS_COLUNAS = dict([
     (NOMES_COLUNAS[4], TIPOS_FILTROS.get(NUMERICO)),
     (NOMES_COLUNAS[5], TIPOS_FILTROS.get(NUMERICO))
 ])
+LISTA_DE_CORES = [
+    '#A9A9A9', '#836FFF', '#00BFFF', '#7FFFD4', '#00FF7F', '#228B22',
+    '#DAA520', '#D2691E', '#D2B48C', '#FF00FF', '#DC143C', '#A52A2A',
+    '#FF0000', '#FFA500', '#FFFF00', '#F0F8FF', '#EEE8AA', '#FFF0F5',
+    '#D8BFD8', '#B0E0E6', '#F5F5F5', '#DDA0DD', '#696969', '#00BFFF',
+    '#008080', '#8FBC8F', '#ADFF2F', '#DAA520', '#F0E68C', '#FDF5E6',
+    '#F5FFFA'
+]
+MESES_ANO = [
+    'Janeiro', 'Fevereiro', 'Marco', 'Abril', 'Maio', 'Junho',
+    'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
+]
+INDICE_EIXO_X = 'x'
+INDICE_EIXO_Y = 'y'
 
 
 def cabecalho_programa():
@@ -62,7 +76,7 @@ def ler_arquivo_pesquisa_climatica():
     return dados
 
 
-def verifica_exibir_todos_dados(dados = None):
+def verifica_exibir_todos_dados(dados=None):
     """
     Funcao que questiona usuario se deseja exibir os dados da pesquisa
     """
@@ -72,14 +86,14 @@ def verifica_exibir_todos_dados(dados = None):
     iteracoes = 0
     exibir_dados = True
     while exibir_dados:
-        resposta = ler_entrada_usuario(texto_inicial if iteracoes == 0 else texto_recorrente)
+        resposta = ler_confirmacao_usuario(texto_inicial if iteracoes == 0 else texto_recorrente)
         exibir_dados = (resposta is not None) and (resposta.strip().lower() == 's')
         if exibir_dados:
             iteracoes += 1
             print(dados_exibir)
 
 
-def ordernar_dados(nome_coluna, tipo_ordenacao, dados = None):
+def ordernar_dados(nome_coluna, tipo_ordenacao, dados=None):
     """
     Funcao que fara a ordenacao dos dados.
     :param nome_coluna: nome da coluna para ordernar os dados.
@@ -105,7 +119,7 @@ def verifica_ordernar_dados():
     ordernar = True
     dados = None
     while ordernar:
-        resposta = ler_entrada_usuario(texto_inicial if iteracoes == 0 else texto_recorrente)
+        resposta = ler_confirmacao_usuario(texto_inicial if iteracoes == 0 else texto_recorrente)
         ordernar = (resposta is not None) and (resposta.strip().lower() == 's')
         if ordernar:
             iteracoes += 1
@@ -119,7 +133,7 @@ def verifica_ordernar_dados():
     return dados
 
 
-def filtrar_dados(nome_coluna, tipo_filtro, valor, dados = None):
+def filtrar_dados(nome_coluna, tipo_filtro, valor, dados=None):
     """
     Funcao que filtra dados baseado no nome da coluna e tipo de filtro.
     :param nome_coluna: nome da coluna a filtrar
@@ -153,7 +167,7 @@ def filtrar_dados(nome_coluna, tipo_filtro, valor, dados = None):
             return dados[dados[nome_coluna] != float(valor)]
 
 
-def verifica_filtrar_dados(dados = None):
+def verifica_filtrar_dados(dados=None):
     """
     Funcao que verifica se usuario deseja filtrar dados
     :return: dados ordenados
@@ -165,7 +179,7 @@ def verifica_filtrar_dados(dados = None):
     filtrar = True
     dados = None
     while filtrar:
-        resposta = ler_entrada_usuario(texto_inicial if iteracoes == 0 else texto_recorrente)
+        resposta = ler_confirmacao_usuario(texto_inicial if iteracoes == 0 else texto_recorrente)
         filtrar = (resposta is not None) and (resposta.strip().lower() == 's')
         if filtrar:
             iteracoes += 1
@@ -186,7 +200,7 @@ def verifica_filtrar_dados(dados = None):
     return dados
 
 
-def exportar_dados(dados = None):
+def exportar_dados(dados=None):
     """
     Funcao que exporta os dados do usuario para um arquivo csv
     """
@@ -197,14 +211,118 @@ def exportar_dados(dados = None):
     dados.to_csv(nome_arquivo, index=False, sep=';')
 
 
-def verifica_exportar_dados(dados = None):
+def verifica_exportar_dados(dados=None):
     """
     Funcao que verifica se usuario deseja exportar dados
     """
     dados = dados_pesquisa if dados is None else dados
-    resposta = ler_entrada_usuario("Voce deseja exportar esses dados? (s/n)")
+    resposta = ler_confirmacao_usuario("Voce deseja exportar esses dados? (s/n)")
     if (resposta is not None) and (resposta.strip().lower() == 's'):
         exportar_dados(dados)
+
+
+def retornar_dados_grafico_precipitacao_media():
+    """
+    Funcao que retorna os dados para grafico de precipitacao media.
+    :return: dados do grafico em um dicionario com chaves x e y.
+    """
+    dados = filtrar_dados('mes', 'igual', 'Junho', dados_pesquisa)
+    return dict([
+        (INDICE_EIXO_X, dados['dia']),
+        (INDICE_EIXO_Y, dados['precipitacao_media'])
+    ])
+
+
+def retornar_dados_grafico_temperatura_minima():
+    """
+    Funcao que retorna os dados para grafico de media de temperatura minima.
+    :return: dados do grafico em um dicionario com chaves x e y.
+    """
+    dados = filtrar_dados('mes', 'igual', 'Junho', dados_pesquisa)
+    return dict([
+        (INDICE_EIXO_X, dados['dia']),
+        (INDICE_EIXO_Y, dados['temperatura_minima'])
+    ])
+
+
+def retornar_dados_volume_pluviometrico_medio():
+    """
+    Funcao que retorna os de volume pluviometrico medio anual.
+    :return: dados do em um dicionario com chaves Nome do Mes.
+    """
+    propriedade = 'precipitacao_media'
+    dicionario = {}
+    for indice in range(len(MESES_ANO)):
+        mes_ano = MESES_ANO[indice]
+        dicionario[mes_ano] = filtrar_dados('mes', 'igual', mes_ano, dados_pesquisa)[propriedade].mean()
+    return dicionario
+
+
+def retornar_dados_grafico_volume_pluviometrico_medio():
+    """
+    Funcao que retorna os dados para grafico de volume pluviometrico medio anual.
+    :return: dados do grafico em um dicionario com chaves x e y.
+    """
+    dados = retornar_dados_volume_pluviometrico_medio()
+    dados_eixo_y = []
+    for indice in range(len(MESES_ANO)):
+        mes_ano = MESES_ANO[indice]
+        dados_eixo_y.append(dados.get(mes_ano))
+    return dict([
+        (INDICE_EIXO_X, MESES_ANO),
+        (INDICE_EIXO_Y, dados_eixo_y)
+    ])
+
+
+def retornar_dados_grafico_distribuicao_chuva():
+    """
+    Funcao que retorna os dados para grafico de volume distribuicao de chuva.
+    :return: dados do grafico em um dicionario com chaves x e y.
+    """
+    dados = retornar_dados_volume_pluviometrico_medio()
+    dados_eixo_x = ['Primavera', 'Verao', 'Outono', 'Inverno']
+    primavera = dados.get(MESES_ANO[10]) + dados.get(MESES_ANO[9]) + dados.get(MESES_ANO[8])
+    verao = dados.get(MESES_ANO[11]) + dados.get(MESES_ANO[0]) + dados.get(MESES_ANO[1])
+    outono = dados.get(MESES_ANO[2]) + dados.get(MESES_ANO[3]) + dados.get(MESES_ANO[4])
+    inverno = dados.get(MESES_ANO[5]) + dados.get(MESES_ANO[6]) + dados.get(MESES_ANO[7])
+    total = primavera + verao + outono + inverno
+    dados_eixo_y = [
+        (primavera / total) * 100,
+        (verao / total) * 100,
+        (outono / total) * 100,
+        (inverno / total) * 100
+    ]
+    return dict([
+        (INDICE_EIXO_X, dados_eixo_x),
+        (INDICE_EIXO_Y, dados_eixo_y)
+    ])
+
+
+def gerar_graficos():
+    dados_precipitacao_media = retornar_dados_grafico_precipitacao_media()
+    dados_temperatura_minima = retornar_dados_grafico_temperatura_minima()
+    dados_pluviometrico_medio = retornar_dados_grafico_volume_pluviometrico_medio()
+    dados_distribuicao_chuva = retornar_dados_grafico_distribuicao_chuva()
+    fig, axs = plt.subplots(2, 2)
+    # grafico de precipitacao media junho 1998 - 2018
+    axs[0, 0].bar(dados_precipitacao_media.get(INDICE_EIXO_X), dados_precipitacao_media.get(INDICE_EIXO_Y), color=LISTA_DE_CORES)
+    axs[0, 0].set_title('Precipitacao Media em Junho: 1998 - 2018')
+    # grafico de media de temperatura minima 1998 - 2018
+    axs[0, 1].bar(dados_temperatura_minima.get(INDICE_EIXO_X), dados_temperatura_minima.get(INDICE_EIXO_Y), color=LISTA_DE_CORES)
+    axs[0, 1].set_title('Media de Temperatura Minima em Junho: 1998 - 2018')
+    # grafico de volume medio pluviometrico anual
+    axs[1, 0].plot(dados_pluviometrico_medio.get(INDICE_EIXO_Y))
+    axs[1, 0].set_title('Volume Pluviometrico Medio: 1998 - 2018')
+    # grafico de media de distribuicao de chuvas
+    axs[1, 1].pie(dados_distribuicao_chuva.get(INDICE_EIXO_Y), labels=dados_distribuicao_chuva.get(INDICE_EIXO_X), colors=LISTA_DE_CORES)
+    axs[1, 1].set_title('Media de Distribuicao de Chuvas: 1998 - 2018')
+
+    #for ax in axs.flat:
+    #    ax.set(xlabel='x-label', ylabel='y-label')
+    # Hide x labels and tick labels for top plots and y ticks for right plots.
+    #for ax in axs.flat:
+    #    ax.label_outer()
+    plt.show()
 
 
 cabecalho_programa()
@@ -213,4 +331,5 @@ verifica_exibir_todos_dados()
 dados_ordenados = verifica_ordernar_dados()
 dados_filtrados = verifica_filtrar_dados(dados_ordenados)
 verifica_exportar_dados(dados_filtrados)
+gerar_graficos()
 obrigado()
