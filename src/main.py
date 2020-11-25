@@ -37,6 +37,13 @@ INDICE_EIXO_X = 'x'
 INDICE_EIXO_Y = 'y'
 
 
+def iniciar_configuracao():
+    """
+    Funcao que inicializa configuracoes que serao utilizadas ao longo do programa.
+    """
+    pd.set_option("display.max_rows", None, "display.max_columns", None)
+
+
 def cabecalho_programa():
     """
     Funcao que exibe o cabecalho do programa
@@ -60,7 +67,8 @@ def cabecalho_programa():
     print('')
 
 
-def obrigado():
+def rodape_programa():
+    print('')
     print('###########################################################################')
     print('#              Muito obrigado por utilizar nossa aplicacao                #')
     print('###########################################################################')
@@ -349,6 +357,7 @@ def verifica_gerar_graficos():
         print(f'Grafico salvo no arquivo: {nome_arquivo}')
 
 
+iniciar_configuracao()
 cabecalho_programa()
 dados_pesquisa = ler_arquivo_pesquisa_climatica()
 verifica_exibir_todos_dados()
@@ -356,4 +365,4 @@ dados_ordenados = verifica_ordernar_dados()
 dados_filtrados = verifica_filtrar_dados(dados_ordenados)
 verifica_exportar_dados(dados_filtrados)
 verifica_gerar_graficos()
-obrigado()
+rodape_programa()
